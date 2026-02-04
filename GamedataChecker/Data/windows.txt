@@ -1,0 +1,2 @@
+﻿game/bin/win64/engine2.dll
+game/csgo/bin/win64/server.dll

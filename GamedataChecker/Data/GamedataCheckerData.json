@@ -1,0 +1,8 @@
+{
+  "Config": {
+    "WebhookUrl": "",
+    "GithubUser": "",
+    "GithubPass": "",
+    "CS2FixesRepo": ""
+  }
+}
