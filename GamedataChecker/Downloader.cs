@@ -392,8 +392,8 @@ static class Downloader
             Console.WriteLine($"Author: {latestCommit.Author.Name} <{latestCommit.Author.Email}>");
             Console.WriteLine($"Date: {latestCommit.Author.When}");
             Console.WriteLine($"Message: {latestCommit.MessageShort}\n");
-
-            return latestCommit.Author.When.Date;
+            
+            return latestCommit.Author.When.UtcDateTime;
         }
     }
 

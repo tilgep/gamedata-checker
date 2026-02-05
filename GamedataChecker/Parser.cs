@@ -78,6 +78,7 @@ public static class Parser
 
         var kvs = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
         CS2FGamedata.Root kv = kvs.Deserialize<CS2FGamedata.Root>(stream);
+        stream.Close();
 
         CSGO csgo = kv.csgo;
 

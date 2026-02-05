@@ -127,4 +127,29 @@ public static class SigChecker
         return SigState.Multiple;
         
     }
+
+    public static bool HaveSigsChanged(Dictionary<string, Signature> oldSigs, Dictionary<string, Signature> newSigs)
+    {
+        if (oldSigs == null)
+        {
+            return true;
+        }
+        else
+        {
+            if (oldSigs.Count != newSigs.Count) return true;
+            else
+            {
+                foreach (string key in oldSigs.Keys)
+                {
+                    if (!newSigs.ContainsKey(key))
+                        return true;
+
+                    if (!oldSigs[key].Equals(newSigs[key]))
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

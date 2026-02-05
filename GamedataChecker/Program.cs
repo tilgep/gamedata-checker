@@ -23,43 +23,25 @@ class GamedataChecker
         }
         Dictionary<string, Signature> newSigs = Parser.Parse(gdfile);
 
-        // Check for CS2 update
-        bool updated = await Downloader.Download(false);
-
-        Downloader.WriteData();
-
         if (newSigs == null)
         {
             Console.WriteLine("Failed to get signatures from the CS2F repo. Exiting...");
             return 0;
         }
 
-        bool sigChanges = false;
-        if (oldSigs == null)
+        bool sigChanges = SigChecker.HaveSigsChanged(oldSigs, newSigs);
+        if (sigChanges)
         {
-            sigChanges = true;
+            Console.WriteLine("Signatures changed.");
         }
-        else
-        {
-            if (oldSigs.Count != newSigs.Count) sigChanges = true;
-            else
-            {
-                foreach(string key in oldSigs.Keys)
-                {
-                    if (!newSigs.ContainsKey(key))
-                    {
-                        sigChanges = true;
-                        break;
-                    }
 
-                    if (!oldSigs[key].Equals(newSigs[key]))
-                    {
-                        sigChanges = true;
-                        break;
-                    }
-                }
-            }
-        }
+
+
+        // Check for CS2 update
+        bool updated = await Downloader.Download(false);
+
+        Downloader.WriteData();
+
 
         if (updated || sigChanges)
         {
