@@ -30,6 +30,7 @@ class GamedataChecker
 
         if (newSigs == null)
         {
+            Console.WriteLine("Failed to get signatures from the CS2F repo. Exiting...");
             return 0;
         }
 
@@ -40,7 +41,24 @@ class GamedataChecker
         }
         else
         {
-            sigChanges = ((oldSigs.Count == newSigs.Count) && !oldSigs.Except(newSigs).Any());
+            if (oldSigs.Count != newSigs.Count) sigChanges = true;
+            else
+            {
+                foreach(string key in oldSigs.Keys)
+                {
+                    if (!newSigs.ContainsKey(key))
+                    {
+                        sigChanges = true;
+                        break;
+                    }
+
+                    if (!oldSigs[key].Equals(newSigs[key]))
+                    {
+                        sigChanges = true;
+                        break;
+                    }
+                }
+            }
         }
 
         if (updated || sigChanges)

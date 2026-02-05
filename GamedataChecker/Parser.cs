@@ -46,6 +46,23 @@ public class Signature
     public SigState LinuxState { get; set; }
     public int WindowsCount = 0;
     public int LinuxCount = 0;
+
+    public bool Equals(Signature other)
+    {
+        if(library != other.library) return false;
+        if(windows.Length != other.windows.Length) return false;
+        for(int i = 0; i< windows.Length;i++)
+        {
+            if(windows[i] != other.windows[i]) return false;
+        }
+
+        if(linux.Length != other.linux.Length) return false;
+        for (int i = 0; i < linux.Length; i++)
+        {
+            if (linux[i] != other.linux[i]) return false;
+        }
+        return true;
+    }
 }
 public static class Parser
 {

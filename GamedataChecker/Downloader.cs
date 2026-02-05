@@ -341,6 +341,12 @@ static class Downloader
             return DateTime.UnixEpoch;
         }
 
+        if (Data.CS2FixesRepo == "")
+        {
+            Console.WriteLine("Missing CS2FixesRepo path setting!!!!\n");
+            return DateTime.UnixEpoch;
+        }
+
         string logMessage = "";
         using (var repo = new Repository(Data.CS2FixesRepo))
         {
