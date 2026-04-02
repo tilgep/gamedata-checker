@@ -9,7 +9,7 @@ namespace GamedataChecker;
 public static class SigChecker
 {
     const string GAME_FOLDER = "data/depots/game/";
-    const byte WILDCARD = 0x2A;
+    public const byte WILDCARD = 0x2A;
     const string WINDOWS_ENGINE = GAME_FOLDER + "bin/win64/engine2.dll";
     const string WINDOWS_SERVER = GAME_FOLDER + "csgo/bin/win64/server.dll";
 

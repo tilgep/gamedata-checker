@@ -1,7 +1,9 @@
-﻿using System;
+﻿using SteamKit2.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ValveKeyValue;
 using static GamedataChecker.CS2FGamedata;
@@ -66,7 +68,70 @@ public class Signature
 }
 public static class Parser
 {
-    public static Dictionary<string, Signature> Parse(string gamedatafile)
+    public static Dictionary<string, Signature> Parse(string[] files)
+    {
+        Dictionary<string, Signature> sigs = null;
+        foreach (var filepath in files)
+        {
+            if (filepath.EndsWith(".games.txt"))
+            {
+                sigs = ParseKV(filepath);
+            }
+            else if (filepath.EndsWith(".jsonc"))
+            {
+                sigs = ParseJson(filepath);
+            }
+
+            if (sigs != null)
+                return sigs;
+        }
+        return sigs;
+    }
+
+    public static Dictionary<string, Signature> ParseJson(string gamedatafile)
+    {
+        Console.WriteLine("Parsing signatures from: {0}", gamedatafile);
+        if (!File.Exists(gamedatafile))
+        {
+            Console.WriteLine("Gamedata file doesn't exist!\n");
+            return null;
+        }
+        var stream = File.OpenRead(gamedatafile);
+
+        var options = new JsonSerializerOptions
+        {
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            AllowTrailingCommas = true,
+        };
+
+        var json = JsonSerializer.Deserialize<CSGO>(stream, options);
+        stream.Close();
+        if (json == null)
+        {
+            Console.WriteLine("Error parsing json signatures");
+            return null;
+        }
+
+        Dictionary<string, Signature> sigs = new Dictionary<string, Signature>();
+        foreach (var k in json.Signatures.Keys)
+        {
+            //Console.WriteLine(k);
+            Signature s = new Signature
+            {
+                library = json.Signatures[k].library,
+            };
+
+            s.windows = GetBytesFromSigString(json.Signatures[k].windows, out var wState);
+            s.WindowsState = wState;
+
+            s.linux = GetBytesFromSigString(json.Signatures[k].linux, out var lState);
+            s.LinuxState = lState;
+
+            sigs[k] = s;
+        }
+        return sigs;
+    }
+    public static Dictionary<string, Signature> ParseKV(string gamedatafile)
     {
         Console.WriteLine("Parsing signatures from: {0}", gamedatafile);
         if(!File.Exists(gamedatafile))
@@ -133,6 +198,31 @@ public static class Parser
         for (int i = 0; i < sBytes.Length; i++)
         {
             bytes[i] = Convert.ToByte(sBytes[i], 16);
+        }
+
+        return bytes;
+    }
+
+    public static byte[] GetBytesFromSigString(string sig, out SigState state)
+    {
+        state = SigState.None;
+        if (sig == null)
+        {
+            state = SigState.NotDefined;
+            return Array.Empty<byte>();
+        }
+
+        string[] sBytes = sig.Split(" ");
+        byte[] bytes = new byte[sBytes.Length];
+        //Console.WriteLine("parsed bytes: {0}", bytes.Length);
+
+
+        for (int i = 0; i < sBytes.Length; i++)
+        {
+            if (sBytes[i] == "?" || sBytes[i] == "??")
+                bytes[i] = SigChecker.WILDCARD;
+            else 
+                bytes[i] = Convert.ToByte(sBytes[i], 16);
         }
 
         return bytes;

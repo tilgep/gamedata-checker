@@ -64,7 +64,11 @@ static class Downloader
         {
             Console.WriteLine($"{DATA_FILENAME} does not exist!");
             Console.WriteLine(" Please go fill in the following fields for this to work as intended");
-            Console.WriteLine(" {0}\n {1}\n {2}", nameof(DownloaderData.WebhookUrl), nameof(DownloaderData.GithubUser), nameof(DownloaderData.GithubPass));
+            Console.WriteLine(" {0}\n {1}\n {2}\n {3}", 
+                nameof(DownloaderData.WebhookUrl), 
+                nameof(DownloaderData.GithubUser), 
+                nameof(DownloaderData.GithubPass),
+                nameof(DownloaderData.CS2FixesRepo));
             FileStream f = File.Create(DATA_FILENAME);
             f.Close();
             return false;
@@ -240,7 +244,7 @@ static class Downloader
             Debug.WriteLine(ex);
         }
     }
-    public static async Task<bool> Download(bool manifestOnly)
+    public static async Task<bool> Download(bool manifestOnly, string branchName = DEFAULT_BRANCH)
     {
         Console.WriteLine("Checking for CS2 update...");
         ContentDownloader.Config.DownloadManifestOnly = manifestOnly;
@@ -254,7 +258,7 @@ static class Downloader
         {
             try
             {
-                var manifests = await ContentDownloader.GetDepotLatestManifestInfo(CS2_APPID, depotManifestIds, DEFAULT_BRANCH);
+                var manifests = await ContentDownloader.GetDepotLatestManifestInfo(CS2_APPID, depotManifestIds, branchName);
                 var windowsInfo = new List<DepotDownloadInfo>();
                 var linuxInfo = new List<DepotDownloadInfo>();
                 foreach (var mani in manifests) 
