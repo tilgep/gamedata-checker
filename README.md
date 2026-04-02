@@ -5,8 +5,13 @@ Code taken from [DepotDownloader](https://github.com/SteamRE/DepotDownloader) to
 
 ### Setup
 
-In the `Data/GamedataChecker.json` file set the following:
-- Webhook URL
-- GitHub Username
-- GitHub Password
-- Path to CS2Fixes git repo
+- Download the latest [Release](https://github.com/tilgep/gamedata-checker/releases)
+- Extract the contents somewhere
+- Clone your desired CS2Fixes repo somewhere
+
+- In the `Data/GamedataChecker.json` file set the following:
+  - Webhook URL
+  - GitHub Username
+  - GitHub Password
+  - Path to CS2Fixes git repo
+- Run `GamedataChecker` exe or binary 
