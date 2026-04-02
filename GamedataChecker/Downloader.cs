@@ -126,7 +126,7 @@ static class Downloader
         if (configElem.TryGetProperty(nameof(DownloaderData.WebhookUrl), out JsonElement webhookelem))
         {
             string? webhook = webhookelem.GetString();
-            if (webhook != null)
+            if (webhook != null && webhook != "")
             {
                 Data.WebhookUrl = webhook;
             }
@@ -138,7 +138,7 @@ static class Downloader
         if (configElem.TryGetProperty(nameof(DownloaderData.GithubUser), out JsonElement GithubUserelem))
         {
             string? username = GithubUserelem.GetString();
-            if (username != null)
+            if (username != null && username != "")
             {
                 Data.GithubUser = username;
             }

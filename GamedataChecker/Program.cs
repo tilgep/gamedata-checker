@@ -11,7 +11,9 @@ class GamedataChecker
     {
         Console.WriteLine("Starting GamedataChecker");
         AccountSettingsStore.LoadFromFile("account.config");
-        Downloader.LoadData();
+
+        if (!Downloader.LoadData())
+            return 0;
 
         string[] gdfiles = [
             Downloader.Data.CS2FixesRepo + "/gamedata/cs2fixes.games.txt",
