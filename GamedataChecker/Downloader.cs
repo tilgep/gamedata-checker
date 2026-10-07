@@ -272,7 +272,7 @@ static class Downloader
                             Data.hasLatestWindowsDownloaded = false;
                         }
                         else
-                            Data.hasLatestWindowsDownloaded = true;
+                            Data.hasLatestWindowsDownloaded = HaveDownloadedFiles(WINDOWS_FILELIST);
                     }
                     else if(mani.DepotId ==  LINUX_BIN_DEPOT)
                     {
@@ -283,14 +283,14 @@ static class Downloader
                             Data.hasLatestLinuxDownloaded = false;
                         }
                         else
-                            Data.hasLatestLinuxDownloaded = true;
+                            Data.hasLatestLinuxDownloaded = HaveDownloadedFiles(LINUX_FILELIST);
                     }
                 }
 
                 if (!Data.hasLatestWindowsDownloaded)
                 {
                     Console.WriteLine("Donwloading new Windows Depot");
-                    SetFileList(WINDOWS_FILELIST);
+                    await SetFileList(WINDOWS_FILELIST);
                     await ContentDownloader.DownloadSteam3Async(windowsInfo).ConfigureAwait(false);
                     Data.hasLatestWindowsDownloaded = true;
                     updated = true;
@@ -299,7 +299,7 @@ static class Downloader
                 if (!Data.hasLatestLinuxDownloaded)
                 {
                     Console.WriteLine("Donwloading new Linux Depot");
-                    SetFileList(LINUX_FILELIST);
+                    await SetFileList(LINUX_FILELIST);
                     await ContentDownloader.DownloadSteam3Async(linuxInfo).ConfigureAwait(false);
                     Data.hasLatestLinuxDownloaded = true;
                     updated = true;
@@ -401,7 +401,14 @@ static class Downloader
         }
     }
 
-    static async void SetFileList(string filelist)
+    static bool HaveDownloadedFiles(string filelist)
+    {
+        return File.ReadLines(filelist)
+            .Where(entry => !string.IsNullOrWhiteSpace(entry) && !entry.StartsWith(RegexPrefix))
+            .All(entry => File.Exists(Path.Combine(ContentDownloader.Config.InstallDirectory, entry.Replace('\\', '/'))));
+    }
+
+    static async Task SetFileList(string filelist)
     {
         if (!File.Exists(filelist))
             return;
