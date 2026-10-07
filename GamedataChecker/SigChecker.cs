@@ -12,15 +12,18 @@ public static class SigChecker
     public const byte WILDCARD = 0x2A;
     const string WINDOWS_ENGINE = GAME_FOLDER + "bin/win64/engine2.dll";
     const string WINDOWS_SERVER = GAME_FOLDER + "csgo/bin/win64/server.dll";
+    const string WINDOWS_WORLDRENDERER = GAME_FOLDER + "bin/win64/worldrenderer.dll";
 
     const string LINUX_ENGINE = GAME_FOLDER + "bin/linuxsteamrt64/libengine2.so";
     const string LINUX_SERVER = GAME_FOLDER + "csgo/bin/linuxsteamrt64/libserver.so";
+    const string LINUX_WORLDRENDERER = GAME_FOLDER + "bin/linuxsteamrt64/libworldrenderer.so";
 
     public static void Check(Dictionary<string, Signature> sigs)
     {
         Console.WriteLine("Checking windows sigs");
         byte[] engine = File.ReadAllBytes(WINDOWS_ENGINE);
         byte[] server = File.ReadAllBytes(WINDOWS_SERVER);
+        byte[] worldrenderer = File.ReadAllBytes(WINDOWS_WORLDRENDERER);
 
         int progress = 1;
         foreach (var kv in sigs)
@@ -47,6 +50,11 @@ public static class SigChecker
                 state = FindSignature(server, sig.windows, out var matchLocs);
                 matchCount = matchLocs.Count;
             }
+            else if (sig.library.ToLower() == "worldrenderer")
+            {
+                state = FindSignature(worldrenderer, sig.windows, out var matchLocs);
+                matchCount = matchLocs.Count;
+            }
 
             sig.WindowsCount = matchCount;
             sig.WindowsState = state;
@@ -58,6 +66,7 @@ public static class SigChecker
         Console.WriteLine("Checking linux sigs");
         engine = File.ReadAllBytes(LINUX_ENGINE);
         server = File.ReadAllBytes(LINUX_SERVER);
+        worldrenderer = File.ReadAllBytes(LINUX_WORLDRENDERER);
 
         progress = 1;
         foreach (var kv in sigs)
@@ -82,6 +91,11 @@ public static class SigChecker
             else if (sig.library.ToLower() == "server")
             {
                 state = FindSignature(server, sig.linux, out var matchLocs);
+                matchCount = matchLocs.Count;
+            }
+            else if (sig.library.ToLower() == "worldrenderer")
+            {
+                state = FindSignature(worldrenderer, sig.linux, out var matchLocs);
                 matchCount = matchLocs.Count;
             }
 
